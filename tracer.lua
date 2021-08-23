@@ -49,24 +49,27 @@ end
 function tracer:mix(a, b, fac)
 	return a * (1 - fac) + b * fac
 end
-function tracer:property(object, property)
-	return object:GetAttribute(property) or 0
+function tracer:roughness(object)
+	return object:GetAttribute("Roughness") or 0
+end
+function tracer:ior(object)
+	return object:GetAttribute("IOR") or params.ior
 end
 function tracer:bsdf(material, depth)
 	if material == "Plastic" then
 		local d = self:hemisphere(self.d, self.n)
 		return self.e + self.albedo * self:trace(Ray.new(self.x, d * params.ray_dist), depth);
 	elseif material == "Metal" then
-		self.n += randVec() * self:property(self.object, "Roughness")
+		self.n += randVec() * self:roughness(self.object)
 		return self.e + self.albedo * self:trace(Ray.new(self.x, self:reflect(self.d, self.n) * params.ray_dist), depth)
 	elseif material == "Marble" then
 		local a = self:bsdf("Plastic", depth)
 		local b = self:bsdf("Metal", depth)
 		return self:mix(a, b, 0.15)
 	elseif material == "Glass" then
-		self.n += randVec() * self:property(self.object, "Roughness")
+		self.n += randVec() * self:roughness(self.object)
 		local cosi = self.d:Dot(self.n)
-		local ior = self:property(self.object, "IOR")
+		local ior = self:ior(self.object)
 		local eta = cosi > 0 and 1 / ior or ior
 		local fr = self:fresnel(cosi, eta)
 		local r = self:reflect(self.d, self.n).unit
