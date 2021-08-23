@@ -33,7 +33,7 @@ function tracer:fresnel(cosi, eta)
 end
 function tracer:refract(d, n, cosi, ior)
 	local etai, etat = 1, ior ^ 2
-	if (cosi < 0) then 
+	if cosi < 0 then 
 		cosi = -cosi 
 	else  
 		etai, etat = etat, etai
