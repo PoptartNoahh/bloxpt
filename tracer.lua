@@ -63,8 +63,8 @@ function tracer:ior(object)
 end
 function tracer:bsdf(material, depth)
 	if material == "Plastic" then
-		local d = self:hemisphere(self.d, self.n)
-		return self.e + self.albedo * self:trace(Ray.new(self.x, d * params.ray_dist), depth);
+		self.d = self:hemisphere(self.d, self.n)
+		return self.e + self.albedo * self:trace(Ray.new(self.x, self.d * params.ray_dist), depth);
 	elseif material == "Metal" then
 		self.n += randVec() * self:roughness(self.object)
 		return self.e + self.albedo * self:trace(Ray.new(self.x, self:reflect(self.d, self.n) * params.ray_dist), depth)
