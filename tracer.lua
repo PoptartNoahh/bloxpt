@@ -22,7 +22,7 @@ function tracer:hemisphere(d, n)
 	local phi, r2 = tau * math.random(), math.random()
 	local sint = math.sqrt(r2)
 	local w = n:Dot(d) < 0 and n or n * -1
-	local u = (math.abs(w.x) > 0.1 and up:Cross(w) or right:Cross(w)).unit
+	local u = math.abs(w.x) > 0.1 and up:Cross(w) or right:Cross(w)
 	local v = w:Cross(u)
 	return u * math.cos(phi) * sint + v * math.sin(phi) * sint + w * math.sqrt(1 - r2)
 end
@@ -33,20 +33,20 @@ function tracer:fresnel(cosi, eta)
 		g = math.sqrt(g)
 		local a = (g - cosi) / (g + cosi)
 		local b = (cosi * (g + cosi) - 1) / (cosi * (g - cosi) + 1)
-		return 0.5 * a * a * (1 + b * b)
+		return a ^ 2 * (1 + b ^ 2) / 2
 	end
 	return 1
 end
 function tracer:refract(d, n, cosi, ior)
 	local etai, etat = 1, ior ^ 2
-	if cosi < 0 then 
+	if cosi < 0 then
 		cosi = -cosi 
 	else  
 		etai, etat = etat, etai
 		n = -n
 	end
 	local eta = etai / etat
-	local k = 1 - eta * eta * (1 - cosi * cosi)
+	local k = 1 - eta ^ 2 * (1 - cosi ^ 2)
 	return k < 0 and nullVec or eta * d + (eta * cosi - math.sqrt(k)) * n
 end
 function tracer:reflect(d, n)
@@ -63,8 +63,7 @@ function tracer:ior(object)
 end
 function tracer:bsdf(material, depth)
 	if material == "Plastic" then
-		self.d = self:hemisphere(self.d, self.n)
-		return self.e + self.albedo * self:trace(Ray.new(self.x, self.d * params.ray_dist), depth);
+		return self.e + self.albedo * self:trace(Ray.new(self.x, self:hemisphere(self.d, self.n) * params.ray_dist), depth)
 	elseif material == "Metal" then
 		self.n += randVec() * self:roughness(self.object)
 		return self.e + self.albedo * self:trace(Ray.new(self.x, self:reflect(self.d, self.n) * params.ray_dist), depth)
@@ -78,8 +77,8 @@ function tracer:bsdf(material, depth)
 		local ior = self:ior(self.object)
 		local eta = cosi > 0 and 1 / ior or ior
 		local fr = self:fresnel(cosi, eta)
-		local r = self:reflect(self.d, self.n).unit
-		local t = self:refract(self.d, self.n, cosi, ior).unit
+		local r = self:reflect(self.d, self.n)
+		local t = self:refract(self.d, self.n, cosi, ior)
 		local bias = params.glass_bias
 		local dist = params.ray_dist
 		local tr = Ray.new(self.x + t * bias, t * dist)
