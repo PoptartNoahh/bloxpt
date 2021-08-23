@@ -1,3 +1,9 @@
+--[[
+BLOXPT
+
+By Noah E.
+]]
+
 local up, right, nullVec, tau = Vector3.new(0, 1, 0), Vector3.new(1, 0, 0), Vector3.new(), 2 * math.pi
 local randVec = function() return Vector3.new(math.random() - .5, math.random() - .5, math.random() - .5) end
 local sRGB = Vector3.new(0.2126, 0.7152, 0.0722)
