@@ -11,7 +11,7 @@ local bloxpt = script.Parent
 local params, util = require(bloxpt.Params), require(bloxpt.Util)
 
 local tracer = {}
-function tracer.new()
+tracer.__call = function()
 	local self = {x = nil, n = nil, d = nil, albedo = nil, e = nil, object = nil}
 	return setmetatable(tracer, self)
 end
@@ -107,4 +107,4 @@ function tracer:trace(r, depth)
 	end
 	return nullVec
 end
-return tracer
+return setmetatable({}, tracer)
