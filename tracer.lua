@@ -1,7 +1,7 @@
 --[[
 BLOXPT
 
-By Noah E.
+Noah E.
 ]]
 
 local up, right, nullVec, tau = Vector3.new(0, 1, 0), Vector3.new(1, 0, 0), Vector3.new(), 2 * math.pi
