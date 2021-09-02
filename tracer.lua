@@ -17,14 +17,6 @@ setmetatable(tracer, {
 	end,
 	__index = tracer
 })
-function tracer:sphereCoordinates(pos)
-	local long = math.atan2(pos.Z, pos.X)
-	local lat = math.asin(pos.Y / params.hdri_radius)
-	return Vector2.new(long / tau + 0.5, lat / math.pi + 0.5)
-end
-function tracer:luma(clr)
-	return clr:Dot(sRGB)
-end
 function tracer:hemisphere(d, n)
 	local phi, r2 = tau * math.random(), math.random()
 	local sint = math.sqrt(r2)
@@ -33,7 +25,7 @@ function tracer:hemisphere(d, n)
 	local v = w:Cross(u)
 	return u * math.cos(phi) * sint + v * math.sin(phi) * sint + w * math.sqrt(1 - r2)
 end
-function tracer:fresnel(cosi, eta)
+function tracer:fresnelDielectric(cosi, eta)
 	cosi = math.abs(cosi)
 	local g = eta * eta - 1 + cosi * cosi
 	if g > 0 then
@@ -57,6 +49,14 @@ function tracer:refract(d, n, cosi, ior)
 end
 function tracer:reflect(d, n)
 	return d - n * 2 * n:Dot(d)
+end
+function tracer:sphereCoordinates(pos)
+	local long = math.atan2(pos.Z, pos.X)
+	local lat = math.asin(pos.Y / params.hdri_radius)
+	return Vector2.new(long / tau + 0.5, lat / math.pi + 0.5)
+end
+function tracer:luma(clr)
+	return clr:Dot(sRGB)
 end
 function tracer:mix(a, b, fac)
 	return a * (1 - fac) + b * fac
@@ -82,7 +82,7 @@ function tracer:bsdf(material, depth)
 		local cosi = self.d:Dot(self.n)
 		local ior = self:ior(self.object)
 		local eta = cosi > 0 and 1 / ior or ior
-		local fr = self:fresnel(cosi, eta)
+		local fr = self:fresnelDielectric(cosi, eta)
 		local r, t = self:reflect(self.d, self.n), self:refract(self.d, self.n, cosi, ior)
 		local bias, dist = params.glass_bias,params.ray_dist
 		local rr, tr = Ray.new(self.x + r * bias, r * dist), Ray.new(self.x + t * bias, t * dist)
