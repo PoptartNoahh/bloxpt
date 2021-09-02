@@ -89,7 +89,7 @@ function tracer:bsdf(material, depth)
 end
 function tracer:trace(r, depth)
 	if depth > params.max_depth then return nullVec end
-	self.object, self.x, self.n = util:raycast(r)
+	self.object, self.x, self.n = util.raycast(r)
 	if self.object then
 		self.d = r.Direction.unit
 		self.albedo = util.color3ToVector(self.object.Color) or nullVec
