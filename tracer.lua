@@ -10,11 +10,13 @@ local bloxpt = script.Parent
 local params, util = require(bloxpt.Params), require(bloxpt.Util)
 
 local tracer = {}
-tracer.__index = tracer
-function tracer.new()
-	local self = {x = nil, n = nil, d = nil, albedo = nil, e = nil, object = nil}
-	return setmetatable(tracer, self)
-end
+setmetatable(tracer, {
+	__call = function()
+		local self = {x = nil, n = nil, d = nil, albedo = nil, e = nil, object = nil}
+		return setmetatable(tracer, self)
+	end,
+	__index = tracer
+})
 function tracer:sphereCoordinates(pos)
 	local long = math.atan2(pos.Z, pos.X)
 	local lat = math.asin(pos.Y / params.hdri_radius)
