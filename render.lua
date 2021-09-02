@@ -17,7 +17,7 @@ function render()
 				local unitRay = camera:ScreenPointToRay((x / params.resx) * viewportSize.X, (y / params.resy) * viewportSize.Y)
 				local camDir = unitRay.Direction
 				local origin = unitRay.Origin
-				camDir = Vector3.new(camDir.X + (math.random() / 700), camDir.Y + (math.random() / 700), camDir.Z).unit
+				camDir = Vector3.new(camDir.X + (math.random() / 700), camDir.Y + (math.random() / 700), camDir.Z + (math.random() / 700)).unit
 				local ray = Ray.new(origin, camDir * params.ray_dist)
 				if params.dof then
 					local dofo = origin + (Vector3.new(math.random() - .5, math.random() - .5, math.random() - .5) * params.aperture)
