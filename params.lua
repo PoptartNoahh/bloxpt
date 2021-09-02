@@ -3,7 +3,6 @@ return {
 	ior = 1.5,
 	resx = 96,
 	resy = 64,
-	focal_length = 50, --default 50
 	dof = false,
 	aperture = 0.36,
 	focal_dist = 4.1,
