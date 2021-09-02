@@ -15,6 +15,10 @@ tracer.__call = function()
 	local self = {x = nil, n = nil, d = nil, albedo = nil, e = nil, object = nil}
 	return setmetatable(tracer, self)
 end
+function tracer:smithGGX(rough, n, v)
+	local alpha, nv = rough ^ 2, n:Dot(v)
+	return 2 / (nv + math.sqrt(alpha + (1 - alpha) * (nv ^ 2)))
+end
 function tracer:hemisphere(d, n)
 	local phi, r2 = tau * math.random(), math.random()
 	local sint = math.sqrt(r2)
