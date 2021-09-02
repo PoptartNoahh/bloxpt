@@ -29,7 +29,7 @@ function tracer:hemisphere(d, n)
 end
 function tracer:fresnelDielectric(cosi, eta)
 	cosi = math.abs(cosi)
-	local g = eta * eta - 1 + cosi * cosi
+	local g = eta ^ 2 - 1 + cosi ^ 2
 	if g > 0 then
 		g = math.sqrt(g)
 		local a, b = (g - cosi) / (g + cosi), (cosi * (g + cosi) - 1) / (cosi * (g - cosi) + 1)
