@@ -32,8 +32,7 @@ function tracer:fresnelDielectric(cosi, eta)
 	local g = eta * eta - 1 + cosi * cosi
 	if g > 0 then
 		g = math.sqrt(g)
-		local a = (g - cosi) / (g + cosi)
-		local b = (cosi * (g + cosi) - 1) / (cosi * (g - cosi) + 1)
+		local a, b = (g - cosi) / (g + cosi), (cosi * (g + cosi) - 1) / (cosi * (g - cosi) + 1)
 		return a ^ 2 * (1 + b ^ 2) / 2
 	end
 	return 1
