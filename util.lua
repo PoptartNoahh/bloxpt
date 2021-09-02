@@ -1,9 +1,3 @@
---[[
-BLOXPT
-
-By Noah E.
-]]
-
 local util = {}
 local ignore = {nil or workspace:FindFirstChild("Ignore")}
 function util.color3ToVector(clr)
