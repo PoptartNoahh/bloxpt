@@ -1,9 +1,16 @@
+--[[
+BLOXPT
+
+By Noah E.
+]]
+
 local util = {}
-util.ignore = {nil or workspace:FindFirstChild("Ignore")}
+local ignore = {nil or workspace:FindFirstChild("Ignore")}
 function util.color3ToVector(clr)
 	return Vector3.new(clr.R, clr.G, clr.B)
 end
-function util:raycast(r)
-	return workspace:FindPartOnRayWithIgnoreList(r, self.ignore)
+function util.raycast(r)
+	return workspace:FindPartOnRayWithIgnoreList(r, ignore)
 end
 return util
+
