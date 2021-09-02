@@ -16,10 +16,10 @@ function render()
 			for s = 0, samples do
 				local unitRay = camera:ScreenPointToRay((x / params.resx) * viewportSize.X, (y / params.resy) * viewportSize.Y)
 				local camDir = unitRay.Direction
+				local origin = unitRay.Origin
 				camDir = Vector3.new(camDir.X + (math.random() / 700), camDir.Y + (math.random() / 700), camDir.Z).unit
-				local ray = Ray.new(unitRay.Origin, camDir * params.ray_dist)
+				local ray = Ray.new(origin, camDir * params.ray_dist)
 				if params.dof then
-					local origin = ray.Origin
 					local dofo = origin + (Vector3.new(math.random() - .5, math.random() - .5, math.random() - .5) * params.aperture)
 					local target = origin + camDir * params.focal_dist
 					local dofd = CFrame.new(dofo, target).lookVector * params.ray_dist
