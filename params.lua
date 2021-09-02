@@ -7,7 +7,7 @@ return {
 	aperture = 0.36,
 	focal_dist = 4.1,
 	glass_bias = .1,
-	ray_dist = 140,
+	ray_dist = 150,
 	max_depth = 10,
 	rr_depth = 5,
 	hdri_radius = 120,
