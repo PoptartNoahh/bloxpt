@@ -67,16 +67,16 @@ function tracer:bsdf(material, depth)
 	if material == "Plastic" then
 		return self.e + self.albedo * self:trace(Ray.new(self.x, self:hemisphere(self.d, self.n) * params.ray_dist), depth)
 	elseif material == "Metal" then
-		self.n += randVec() * (object:GetAttribute("Roughness") or 0)
+		self.n += randVec() * (self.object:GetAttribute("Roughness") or 0)
 		return self.e + self.albedo * self:trace(Ray.new(self.x, self:reflect(self.d, self.n) * params.ray_dist), depth)
 	elseif material == "Marble" then
 		local a = self:bsdf("Plastic", depth)
 		local b = self:bsdf("Metal", depth)
 		return self:mix(a, b, 0.15)
 	elseif material == "Glass" then
-		self.n += randVec() * (object:GetAttribute("Roughness") or 0)
+		self.n += randVec() * (self.object:GetAttribute("Roughness") or 0)
 		local cosi = self.d:Dot(self.n)
-		local ior = object:GetAttribute("IOR") or params.ior
+		local ior = self.object:GetAttribute("IOR") or params.ior
 		local eta = cosi > 0 and 1 / ior or ior
 		local fr = self:fresnelDielectric(cosi, eta)
 		local r, t = self:reflect(self.d, self.n), self:refract(self.d, self.n, cosi, ior)
