@@ -7,9 +7,9 @@ local Pathtracer = tracer()
 local camera = workspace.CurrentCamera
 
 function render()
-  local samples = params.samples
-  local viewportSize = camera.ViewportSize
-  local result = Vector3.new()
+	local samples = params.samples
+	local viewportSize = camera.ViewportSize
+	local result = Vector3.new()
 	for y = 1, params.resy do
 		for x = 1, params.resx do
 			result = Vector3.new()
@@ -28,7 +28,7 @@ function render()
 				result += Pathtracer:trace(ray, 0) / samples
 			end
 			local color = vectorToColor3(result)
-			--output(x, y, color)
+			--output(x, y, color)	
 		end
 	end
 end
