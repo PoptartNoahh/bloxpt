@@ -11,13 +11,10 @@ local bloxpt = script.Parent
 local params, util = require(bloxpt.Params), require(bloxpt.Util)
 
 local tracer = {}
-setmetatable(tracer, {
-	__call = function()
-		local self = {x = nil, n = nil, d = nil, albedo = nil, e = nil, object = nil}
-		return setmetatable(tracer, self)
-	end,
-	__index = tracer
-})
+function tracer.new()
+	local self = {x = nil, n = nil, d = nil, albedo = nil, e = nil, object = nil}
+	return setmetatable(tracer, self)
+end
 function tracer:hemisphere(d, n)
 	local phi, r2 = tau * math.random(), math.random()
 	local sint = math.sqrt(r2)
