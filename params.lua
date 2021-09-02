@@ -1,4 +1,4 @@
-local params = {
+return {
 	samples = 100,
 	ior = 1.5,
 	resx = 96,
@@ -15,4 +15,3 @@ local params = {
 	hdri_threshold = 0.95,
 	hdri_power = 1.1
 }
-return params
