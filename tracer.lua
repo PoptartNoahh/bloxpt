@@ -1,12 +1,12 @@
 --[[
 BLOXPT
 
-Noah E.
+By Noah E.
 ]]
-local tau = 2 * math.pi
-local sRGB, up, right, nullVec = Vector3.new(0.2126, 0.7152, 0.0722), Vector3.new(0, 1, 0), Vector3.new(1, 0, 0), Vector3.new(), 
-local randVec = function() return Vector3.new(math.random() - .5, math.random() - .5, math.random() - .5) end
 
+local up, right, nullVec, tau = Vector3.new(0, 1, 0), Vector3.new(1, 0, 0), Vector3.new(), 2 * math.pi
+local randVec = function() return Vector3.new(math.random() - .5, math.random() - .5, math.random() - .5) end
+local sRGB = Vector3.new(0.2126, 0.7152, 0.0722)
 local bloxpt = script.Parent
 local params, util = require(bloxpt.Params), require(bloxpt.Util)
 
@@ -19,23 +19,19 @@ function tracer:smithGGX(rough, n, v)
 	local alpha, nv = rough ^ 2, n:Dot(v)
 	return 2 / (nv + math.sqrt(alpha + (1 - alpha) * (nv ^ 2)))
 end
-function tracer:hemisphere(d, n)
+function tracer:monteCarlo(d, n)
 	local phi, r2 = tau * math.random(), math.random()
 	local sint = math.sqrt(r2)
-	local w = n:Dot(d) < 0 and n or -n
-	local u = math.abs(w.x) > 0.1 and up:Cross(w) or right:Cross(w)
+	local w = if n:Dot(d) < 0 then n else -n
+	local u = if math.abs(w.x) > 0.1 then up:Cross(w) else right:Cross(w)
 	local v = w:Cross(u)
 	return u * math.cos(phi) * sint + v * math.sin(phi) * sint + w * math.sqrt(1 - r2)
 end
 function tracer:fresnelDielectric(cosi, eta)
 	cosi = math.abs(cosi)
 	local g = eta ^ 2 - 1 + cosi ^ 2
-	if g > 0 then
-		g = math.sqrt(g)
-		local a, b = (g - cosi) / (g + cosi), (cosi * (g + cosi) - 1) / (cosi * (g - cosi) + 1)
-		return a ^ 2 * (1 + b ^ 2) / 2
-	end
-	return 1
+	local gr = math.sqrt(g)
+	return if g > 0 then ((gr - cosi) / (gr + cosi)) ^ 2 * (1 + ((cosi * (gr + cosi) - 1) / (cosi * (gr - cosi) + 1)) ^ 2) / 2 else 1
 end
 function tracer:refract(d, n, cosi, ior)
 	local eta = ior ^ -2
@@ -46,15 +42,13 @@ function tracer:refract(d, n, cosi, ior)
 		n = -n
 	end
 	local k = 1 - eta ^ 2 * (1 - cosi ^ 2)
-	return k < 0 and nullVec or eta * d + (eta * cosi - math.sqrt(k)) * n
+	return if k < 0 then nullVec else eta * d + (eta * cosi - math.sqrt(k)) * n
 end
 function tracer:reflect(d, n)
 	return d - n * 2 * n:Dot(d)
 end
 function tracer:sphereCoordinates(pos)
-	local long = math.atan2(pos.Z, pos.X)
-	local lat = math.asin(pos.Y / params.hdri_radius)
-	return Vector2.new(long / tau + 0.5, lat / math.pi + 0.5)
+	return Vector2.new(math.atan2(pos.Z, pos.X) / tau + 0.5, math.asin(pos.Y / params.hdri_radius) / math.pi + 0.5)
 end
 function tracer:luma(clr)
 	return clr:Dot(sRGB)
@@ -76,10 +70,10 @@ function tracer:bsdf(material, depth)
 		self.n += randVec() * (self.object:GetAttribute("Roughness") or 0)
 		local cosi = self.d:Dot(self.n)
 		local ior = self.object:GetAttribute("IOR") or params.ior
-		local eta = cosi > 0 and 1 / ior or ior
+		local eta = if cosi > 0 then 1 / ior else ior
 		local fr = self:fresnelDielectric(cosi, eta)
 		local r, t = self:reflect(self.d, self.n), self:refract(self.d, self.n, cosi, ior)
-		local bias, dist = params.glass_bias,params.ray_dist
+		local bias, dist = params.glass_bias, params.ray_dist
 		local rr, tr = Ray.new(self.x + r * bias, r * dist), Ray.new(self.x + t * bias, t * dist)
 		return self.albedo * (self:trace(rr, depth) * fr + self:trace(tr, depth) * (1 - fr))
 	end
