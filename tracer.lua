@@ -58,7 +58,7 @@ function tracer:mix(a, b, fac)
 end
 function tracer:bsdf(material, depth)
 	if material == "Plastic" then
-		return self.e + self.albedo * self:trace(Ray.new(self.x, self:hemisphere(self.d, self.n) * params.ray_dist), depth)
+		return self.e + self.albedo * self:trace(Ray.new(self.x, self:monteCarlo(self.d, self.n) * params.ray_dist), depth)
 	elseif material == "Metal" then
 		self.n += randVec() * (self.object:GetAttribute("Roughness") or 0)
 		return self.e + self.albedo * self:trace(Ray.new(self.x, self:reflect(self.d, self.n) * params.ray_dist), depth)
